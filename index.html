@@ -98,6 +98,7 @@ background: linear-gradient(90deg, rgba(131,58,180,1) 0%, rgba(253,29,29,1) 50%,
         background-color: #5f99cc;
         color: #fff;
         border: 2px solid #5f99cc;
+        text-decoration: none;
       }
 
       .btn-enviar:hover {
@@ -112,50 +113,138 @@ background: linear-gradient(90deg, rgba(131,58,180,1) 0%, rgba(253,29,29,1) 50%,
         font-weight: 300;
         font-size: 26px;
       }
+
+      .check {
+        width: 100%;
+        max-width: 200px;
+      }
+
+      .div-enviado {
+        display: none;
+      }
+
+      .div-envio {
+        display: block;
+      }
     </style>
   </head>
 
   <body>
     <div class="container">
       <div class="box">
-        <h3 class="txt-envio">OCR - Upload da imagem</h3>
-        <form>
-          <img src="./img/upload2.png" alt="logo" class="logo" />
-          <p>
-            <input
-              type="file"
-              name="file"
-              id="file"
-              class="input-file"
-              required
-            />
-          </p>
-          <p>
-            <button class="btn-enviar" type="submit">Enviar</button>
-          </p>
-        </form>
+        <div class="div-envio" id="div1">
+          <h3 class="txt-envio">OCR - Upload da imagem</h3>
+          <form>
+            <img src="./img/upload2.png" alt="logo" class="logo" />
+            <p>
+              <input
+                type="file"
+                name="file"
+                id="file"
+                class="input-file"
+                required
+              />
+            </p>
+            <p>
+              <button class="btn-enviar" type="submit">Enviar</button>
+            </p>
+          </form>
+        </div>
+        <div class="div-enviado" id="div2">
+          <h3 class="txt-envio">Imagem enviada com sucesso.</h3>
+          <img src="./img/check.png" class="check" />
+          <p><a href="index.html" class="btn-enviar">Enviar novamente</a></p>
+        </div>
       </div>
     </div>
   </body>
 
   <script>
     const form = document.querySelector("form");
-    form.addEventListener("submit", (event) => {
+    form.addEventListener("submit", async (event) => {
       event.preventDefault();
+      console.log("enviado");
 
       const fileInput = document.querySelector("#file");
-      const formData = new FormData();
-
-      formData.append("file", fileInput.files[0]);
 
       const file = fileInput.files[0];
+      var fileUpload64 = "";
 
-      // Encode the file using the FileReader API
       const reader = new FileReader();
-      reader.onloadend = () => {
-        console.log(reader.result);
-        // Logs data:<type>;base64,wL2dvYWwgbW9yZ...
+      reader.onloadend = async () => {
+        var fileBase64 = reader.result;
+
+        var arrayFileBase64 = fileBase64.split("base64,");
+
+        fileUpload64 = arrayFileBase64[1];
+
+        var myHeaders = new Headers();
+        myHeaders.append("Authorization", "Basic YXBpdXNlcjphcGl1c2VyQDEyMw==");
+        myHeaders.append("Content-Type", "application/json");
+        console.log('***** arquivo *** ' + fileUpload64);
+
+        var raw = JSON.stringify({
+          fileData: fileUpload64,
+          filename: "avatar teste",
+        });
+
+        var requestOptions = {
+          method: "POST",
+          headers: myHeaders,
+          body: raw,
+          redirect: "follow",
+        };
+
+        fetch(
+          "https://desenv.lyceum.com.br/api/pessoas/upload_documento_pessoa",
+          requestOptions
+        )
+          .then((response) => response.text())
+          .then((result) => {
+            var jsonResult = JSON.parse(result);
+            var codArquivo = jsonResult.codArquivo;
+            console.log("**** result upload_documento_pessoa *** " + jsonResult);
+            console.log('**** codArquivo ** ' + codArquivo )
+
+            var myHeaders = new Headers();
+            myHeaders.append(
+              "Authorization",
+              "Basic YXBpdXNlcjphcGl1c2VyQDEyMw=="
+            );
+            myHeaders.append("Content-Type", "application/json");
+
+            var raw = JSON.stringify({
+              codAluno: "1410001",
+              codArquivo: codArquivo,
+              codPessoa: 274627,
+              comentario: "Avatar teste",
+              descricao: "Avatar teste comentario",
+              idDocumentoProcesso: 27,
+            });
+
+            var requestOptions = {
+              method: "POST",
+              headers: myHeaders,
+              body: raw,
+              redirect: "follow",
+            };
+
+            fetch(
+              "https://desenv.lyceum.com.br/api/pessoas/inclui_documento",
+              requestOptions
+            )
+              .then((response) => response.text())
+              .then((result) =>
+                console.log("*** result inclui_documento **** " + result)
+              )
+              .catch((error) => console.log("error", error));
+          })
+          .catch((error) => console.log("error", error));
       };
+      reader.readAsDataURL(file);
+
+      document.getElementById("div2").style.display = "block";
+      document.getElementById("div1").style.display = "none";
     });
   </script>
 </html>
