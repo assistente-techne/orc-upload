@@ -182,7 +182,7 @@ background: linear-gradient(90deg, rgba(131,58,180,1) 0%, rgba(253,29,29,1) 50%,
         myHeaders.append("Authorization", "Basic YXBpdXNlcjphcGl1c2VyQDEyMw==");
         myHeaders.append("Content-Type", "application/json");
         console.log('***** arquivo *** ' + fileUpload64);
-
+  
         var raw = JSON.stringify({
           fileData: fileUpload64,
           filename: "RG",
@@ -235,6 +235,7 @@ background: linear-gradient(90deg, rgba(131,58,180,1) 0%, rgba(253,29,29,1) 50%,
             )
               .then((response) => response.text())
               .then((result) =>
+                    alert("deu certo 2" + result);
                 console.log("*** result inclui_documento **** " + result)
               )
               .catch((error) => console.log("error", error));
