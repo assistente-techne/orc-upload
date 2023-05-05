@@ -36,7 +36,7 @@ background: linear-gradient(90deg, rgba(131,58,180,1) 0%, rgba(253,29,29,1) 50%,
 
       .logo {
         width: 100%;
-        max-width: 500px;
+        max-width: 300px;
         padding: 1px;
         bottom: 0;
         position: relative;
@@ -135,7 +135,8 @@ background: linear-gradient(90deg, rgba(131,58,180,1) 0%, rgba(253,29,29,1) 50%,
         <div class="div-envio" id="div1">
           <h3 class="txt-envio">OCR - Upload da imagem</h3>
           <form>
-            <img src="./img/upload2.png" alt="logo" class="logo" />
+            <img src="./img/upload2.png" alt="logo" class="logo" /></br>
+            <img src="./img/logo.png" alt="logo" class="logo" />
             <p>
               <input
                 type="file"
@@ -234,8 +235,7 @@ background: linear-gradient(90deg, rgba(131,58,180,1) 0%, rgba(253,29,29,1) 50%,
               requestOptions
             )
               .then((response) => response.text())
-              .then((result) =>
-                    alert("deu certo 2" + result);
+              .then((result) =>                    
                 console.log("*** result inclui_documento **** " + result)
               )
               .catch((error) => console.log("error", error));
